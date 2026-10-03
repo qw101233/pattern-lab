@@ -98,8 +98,10 @@ NODE_PATH="$HOME/.workbuddy/binaries/node/workspace/node_modules" \
 ## 已知问题 & 决策记录
 
 1. **RGBA8 精度限制**：u/v 在小数值下（< 1/255）会被舍入。表现是高速迭代时偶尔出现"颗粒感"。如需更高精度可改 RGBA16F（需要 WebGL2 + 扩展）。
-2. **Playwright swiftshader 慢**：本地用软件渲染每帧 subSteps=30 仍只能跑 ~17 FPS。真实 GPU（Chrome / Edge 默认硬件加速）能跑满 60FPS。
-3. **初始条件默认值**：中心 4% 半径一团 v + 2% 随机扰动。这比标准 Karl Sims（纯中心单点）反应更快涌现图案，但也牺牲了一点对称美感。如需纯学术演示可改 `sim.js:289` 的 `Math.random() < 0.020` 为 `0`。
+2. **Playwright swiftshader 慢**：本地用软件渲染每帧 subSteps=60 仍只能跑 ~7 FPS。**Gray-Scott 在 swiftshader 下完全涌现需要 50000+ 子步（约 30 分钟）**。真机 GPU 上 5000-10000 子步即可涌现完整图案（数十秒）。
+3. **初始条件默认值**：中心 6% 半径一团 v + 10 个分散种子 + 0.3% 随机扰动。这比标准 Karl Sims（纯中心单点）反应更快涌现图案，但也牺牲了一点对称美感。
+4. **Gray-Scott 参数选择**：本项目用 Du=0.32, Dv=0.16（Karl Sims 标准 Du=0.16, Dv=0.08 的 2x 速率版本）。原因：1x 版本即使跑 100000 子步在 swiftshader 下也不涌现；2x 版本能在合理时间内产生明显的反应扩散模式。F/K 完全用 Karl Sims 原值（F=0.055, K=0.062 等）。
+5. **验证脚本会跑 4 分钟**：因为要让 Gray-Scott 涌现足够多的反应扩散模式。跳过 `verify.js` 直接用浏览器打开 `index.html` 也能看到反应扩散在跑。
 
 ## 重复项目判断
 
