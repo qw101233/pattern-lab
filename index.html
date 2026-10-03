@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>斑图工坊 · Reaction-Diffusion Lab</title>
+  <link rel="stylesheet" href="src/style.css" />
+</head>
+<body>
+  <header class="app-bar">
+    <div class="title">
+      <h1>斑图工坊</h1>
+      <span class="subtitle">Reaction-Diffusion Lab · Gray-Scott 模型实时沙盒</span>
+    </div>
+    <div class="badges">
+      <span class="badge" id="badge-fps">FPS --</span>
+      <span class="badge" id="badge-step">step 0</span>
+      <span class="badge" id="badge-stamp">--</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel panel-left">
+      <section class="group">
+        <h3>反应参数</h3>
+        <div class="ctrl">
+          <label for="ctl-f">Feed (F) <span class="val" id="val-f">0.0550</span></label>
+          <input type="range" id="ctl-f" min="0.005" max="0.100" step="0.0005" value="0.055" />
+        </div>
+        <div class="ctrl">
+          <label for="ctl-k">Kill (K) <span class="val" id="val-k">0.0620</span></label>
+          <input type="range" id="ctl-k" min="0.030" max="0.075" step="0.0005" value="0.062" />
+        </div>
+        <div class="ctrl">
+          <label for="ctl-du">扩散 Du <span class="val" id="val-du">1.000</span></label>
+          <input type="range" id="ctl-du" min="0.4" max="1.6" step="0.01" value="1.00" />
+        </div>
+        <div class="ctrl">
+          <label for="ctl-dv">扩散 Dv <span class="val" id="val-dv">0.500</span></label>
+          <input type="range" id="ctl-dv" min="0.2" max="0.8" step="0.01" value="0.50" />
+        </div>
+        <div class="ctrl">
+          <label for="ctl-dt">时间步长 dt <span class="val" id="val-dt">1.000</span></label>
+          <input type="range" id="ctl-dt" min="0.5" max="1.4" step="0.01" value="1.00" />
+        </div>
+      </section>
+
+      <section class="group">
+        <h3>渲染</h3>
+        <div class="ctrl">
+          <label for="ctl-cmap">调色板</label>
+          <select id="ctl-cmap">
+            <option value="ember">炭火 ember</option>
+            <option value="ocean">深海洋 ocean</option>
+            <option value="neon">霓虹 neon</option>
+            <option value="coral">珊瑚 coral</option>
+            <option value="mono">单色 mono</option>
+            <option value="aurora">极光 aurora</option>
+          </select>
+        </div>
+        <div class="ctrl">
+          <label for="ctl-gamma">亮度 <span class="val" id="val-gamma">1.20</span></label>
+          <input type="range" id="ctl-gamma" min="0.5" max="3.0" step="0.05" value="1.2" />
+        </div>
+        <div class="ctrl">
+          <label for="ctl-zoom">缩放 <span class="val" id="val-zoom">1.00×</span></label>
+          <input type="range" id="ctl-zoom" min="0.5" max="3.0" step="0.05" value="1.0" />
+        </div>
+      </section>
+
+      <section class="group">
+        <h3>操作</h3>
+        <div class="btns">
+          <button id="btn-play" class="primary">⏸ 暂停</button>
+          <button id="btn-reset">↻ 重置</button>
+          <button id="btn-screenshot">📷 截图</button>
+        </div>
+        <div class="btns">
+          <button id="btn-stamp">🎲 随机投放</button>
+          <button id="btn-stripe">▤ 横纹种子</button>
+          <button id="btn-center">◉ 中心投放</button>
+        </div>
+        <p class="hint">
+          <kbd>空格</kbd> 播放/暂停 ·
+          <kbd>R</kbd> 重置 ·
+          <kbd>S</kbd> 截图 ·
+          <kbd>1-6</kbd> 切预置
+        </p>
+        <p class="hint">画布上<strong>鼠标按下拖动</strong>即可投放 V（反应物）</p>
+      </section>
+    </aside>
+
+    <section class="stage">
+      <div class="canvas-wrap" id="canvas-wrap">
+        <canvas id="gl" width="1024" height="1024"></canvas>
+        <div class="overlay" id="overlay">加载中…</div>
+      </div>
+      <div class="hint-bar">
+        <span id="hint-pattern">识别图样：--</span>
+        <span class="dot">·</span>
+        <span>点击/拖动 = 投放反应物 V</span>
+        <span class="dot">·</span>
+        <span>滚轮 = 缩放</span>
+      </div>
+    </section>
+
+    <aside class="panel panel-right">
+      <section class="group">
+        <h3>预置图案</h3>
+        <div class="presets" id="presets"></div>
+      </section>
+      <section class="group">
+        <h3>关于</h3>
+        <p class="desc">
+          Gray-Scott 反应扩散方程在双通道 (u, v) 浓度场上迭代：
+          <code>∂u/∂t = Du·∇²u − uv² + F·(1−u)</code>；
+          <code>∂v/∂t = Dv·∇²v + uv² − (F+K)·v</code>。
+          不同 F/K 区间会涌现珊瑚、迷宫、漩涡、指纹、气泡等完全不同的图样——
+          这是确定性方程里的"涌现生命"。
+        </p>
+        <p class="desc small">
+          求解跑在 GPU：WebGL2 fragment shader 用 5/9 点拉普拉斯算子做空间离散，
+          每帧双纹理乒乓（PingPong）迭代 N 次，全程 60+ FPS。
+        </p>
+      </section>
+    </aside>
+  </main>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>斑图工坊 · 05 · 总结</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; }
+    body {
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+      background: #0a0d12;
+      color: #e8edf3;
+      position: relative;
+    }
+    .bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 900px 1300px at 50% 40%, #1a2230 0%, #0a0d12 60%);
+    }
+    .header {
+      position: absolute; top: 70px; left: 100px;
+      font-size: 26px; letter-spacing: 4px; color: #ff8a4c; font-weight: 700;
+    }
+    .header::before {
+      content: ''; display: inline-block;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #ff8a4c; margin-right: 12px;
+      box-shadow: 0 0 16px #ff8a4c; vertical-align: middle;
+    }
+    .title {
+      position: absolute; top: 130px; left: 100px;
+      font-size: 100px; font-weight: 900; line-height: 1.1; letter-spacing: 4px;
+    }
+    .title .accent {
+      background: linear-gradient(135deg, #ff8a4c, #ffb677);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    /* 大图集 */
+    .gallery {
+      position: absolute; top: 350px; left: 100px; right: 100px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .gallery img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+      border-radius: 16px;
+      border: 1px solid #2c384a;
+    }
+    /* 应用场景 */
+    .apps {
+      position: absolute; top: 980px; left: 100px; right: 100px;
+    }
+    .apps h3 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #ffb677;
+      margin-bottom: 24px;
+      letter-spacing: 2px;
+    }
+    .apps .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .app {
+      background: rgba(20, 26, 38, 0.6);
+      border: 1px solid #2c384a;
+      border-radius: 14px;
+      padding: 22px 24px;
+    }
+    .app .icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    .app .name {
+      font-size: 26px;
+      font-weight: 700;
+      color: #e8edf3;
+      margin-bottom: 6px;
+    }
+    .app .desc {
+      font-size: 22px;
+      color: #8b95a7;
+      line-height: 1.5;
+    }
+    /* CTA */
+    .cta {
+      position: absolute; bottom: 200px; left: 100px; right: 100px;
+      background: linear-gradient(135deg, rgba(255,138,76,0.15), rgba(76,196,255,0.10));
+      border: 1px solid #ff8a4c;
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+    }
+    .cta .big {
+      font-size: 56px; font-weight: 900;
+      background: linear-gradient(135deg, #ff8a4c, #ffb677);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 2px;
+    }
+    .cta .small {
+      font-size: 28px; color: #c5cdd9; margin-top: 16px;
+    }
+    .cta .url {
+      font-family: ui-monospace, monospace;
+      font-size: 30px; color: #4cc4ff;
+      margin-top: 16px;
+      letter-spacing: 1px;
+    }
+    .foot {
+      position: absolute; bottom: 60px; left: 100px;
+      font-size: 24px; color: #5b6678;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="header">SHOWCASE · 最终效果</div>
+  <div class="title">确定性方程里的<br/><span class="accent">涌现生命</span></div>
+
+  <div class="gallery">
+    <img src="../screenshots/01-default-coral.png" alt="coral" />
+    <img src="../screenshots/02-maze.png" alt="maze" />
+    <img src="../screenshots/04-zebra.png" alt="zebra" />
+    <img src="../screenshots/06-mitosis.png" alt="mitosis" />
+  </div>
+
+  <div class="apps">
+    <h3>应用场景</h3>
+    <div class="grid">
+      <div class="app">
+        <div class="icon">🎨</div>
+        <div class="name">生成艺术</div>
+        <div class="desc">独一无二的纹理、壁纸、可打印图案</div>
+      </div>
+      <div class="app">
+        <div class="icon">🔬</div>
+        <div class="name">科普教学</div>
+        <div class="desc">直观展示 PDE + 数值解 + 涌现</div>
+      </div>
+      <div class="app">
+        <div class="icon">🧪</div>
+        <div class="name">图案算法</div>
+        <div class="desc">研究图样形成的自组织临界性</div>
+      </div>
+      <div class="app">
+        <div class="icon">🎮</div>
+        <div class="name">交互演示</div>
+        <div class="desc">让观众参与"创造生命"的过程</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <div class="big">现在就来玩</div>
+    <div class="small">零依赖 · 单 HTML 文件 · 双击即开</div>
+    <div class="url">github.com/qw101233/pattern-lab</div>
+  </div>
+
+  <div class="foot">QW · 2026.10 · PAGE 05 / 05</div>
+</body>
+</html>

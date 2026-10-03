@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>斑图工坊 · 04 · 核心功能 3 · 实时交互</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; }
+    body {
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+      background: #0a0d12;
+      color: #e8edf3;
+      position: relative;
+    }
+    .bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 900px 1400px at 50% 30%, #1a2230 0%, #0a0d12 60%);
+    }
+    .header {
+      position: absolute; top: 70px; left: 100px;
+      font-size: 26px; letter-spacing: 4px; color: #ff8a4c; font-weight: 700;
+    }
+    .header::before {
+      content: ''; display: inline-block;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #ff8a4c; margin-right: 12px;
+      box-shadow: 0 0 16px #ff8a4c; vertical-align: middle;
+    }
+    .title {
+      position: absolute; top: 130px; left: 100px;
+      font-size: 88px; font-weight: 900; line-height: 1.15; letter-spacing: 4px;
+    }
+    .title .accent {
+      background: linear-gradient(135deg, #ff8a4c, #ffb677);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .sub {
+      position: absolute; top: 340px; left: 100px; right: 100px;
+      font-size: 36px; line-height: 1.6; color: #c5cdd9;
+    }
+    /* 调色板对比 */
+    .palette-row {
+      position: absolute; top: 540px; left: 100px; right: 100px;
+      display: flex; gap: 16px;
+    }
+    .swatch {
+      flex: 1;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #2c384a;
+      height: 280px;
+      position: relative;
+    }
+    .swatch img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .swatch .label {
+      position: absolute; bottom: 14px; left: 14px;
+      background: rgba(20,26,38,0.85);
+      backdrop-filter: blur(10px);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 22px; font-weight: 700;
+      color: #ffb677;
+    }
+    /* 交互能力清单 */
+    .features {
+      position: absolute; top: 900px; left: 100px; right: 100px;
+    }
+    .feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 24px;
+      background: rgba(20, 26, 38, 0.5);
+      border: 1px solid #2c384a;
+      border-radius: 16px;
+      padding: 24px 28px;
+    }
+    .feature .icon {
+      flex-shrink: 0;
+      width: 64px; height: 64px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255,138,76,0.2), rgba(76,196,255,0.2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+    }
+    .feature .text { flex: 1; }
+    .feature .name {
+      font-size: 30px; font-weight: 700;
+      color: #ffb677;
+      margin-bottom: 6px;
+    }
+    .feature .desc {
+      font-size: 26px; color: #c5cdd9; line-height: 1.5;
+    }
+    .feature .kbd {
+      display: inline-block;
+      font-family: ui-monospace, monospace;
+      background: #2c384a;
+      border: 1px solid #3b4860;
+      border-radius: 6px;
+      padding: 2px 10px;
+      font-size: 22px;
+      color: #e8edf3;
+      margin: 0 4px;
+    }
+    /* 大字结尾 */
+    .closing {
+      position: absolute; bottom: 220px; left: 100px; right: 100px;
+      font-size: 42px; font-weight: 900;
+      color: #ff8a4c;
+      letter-spacing: 4px;
+    }
+    .closing .small {
+      display: block;
+      font-size: 26px;
+      color: #8b95a7;
+      letter-spacing: 2px;
+      margin-top: 12px;
+      font-weight: 400;
+    }
+    .foot {
+      position: absolute; bottom: 60px; left: 100px;
+      font-size: 24px; color: #5b6678;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="header">FEATURE 03 · 实时交互</div>
+  <div class="title">你<span class="accent">亲手</span><br/>画生命</div>
+  <div class="sub">鼠标按下拖动 = 投放反应物 v，反应从你的指尖开始蔓延。配合键盘快捷键，玩出无限可能。</div>
+
+  <div class="palette-row">
+    <div class="swatch">
+      <img src="../screenshots/08-coral-ocean.png" alt="ocean" />
+      <div class="label">🌊 ocean</div>
+    </div>
+    <div class="swatch">
+      <img src="../screenshots/09-coral-neon.png" alt="neon" />
+      <div class="label">💜 neon</div>
+    </div>
+    <div class="swatch">
+      <img src="../screenshots/10-coral-aurora.png" alt="aurora" />
+      <div class="label">✨ aurora</div>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="icon">🖱️</div>
+      <div class="text">
+        <div class="name">笔刷投放</div>
+        <div class="desc">按下并拖动鼠标，在任意位置注入反应物 v。模拟器会从你的指尖"长出"图案。</div>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="icon">⌨️</div>
+      <div class="text">
+        <div class="name">键盘快捷键</div>
+        <div class="desc">
+          <span class="kbd">空格</span> 暂停 · <span class="kbd">R</span> 重置 ·
+          <span class="kbd">S</span> 截图 · <span class="kbd">1-8</span> 切预置
+        </div>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="icon">🎨</div>
+      <div class="text">
+        <div class="name">6 种调色板</div>
+        <div class="desc">炭火 / 海洋 / 霓虹 / 珊瑚 / 单色 / 极光——同一个图案换种心情。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="closing">
+    全程 GPU 实时运算 · 60FPS
+    <span class="small">WebGL2 fragment shader · 双纹理乒乓（PingPong）</span>
+  </div>
+  <div class="foot">QW · 2026.10 · PAGE 04</div>
+</body>
+</html>

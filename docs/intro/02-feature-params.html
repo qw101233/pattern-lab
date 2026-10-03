@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>斑图工坊 · 02 · 核心功能 1 · 参数实时调控</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; }
+    body {
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+      background: #0a0d12;
+      color: #e8edf3;
+      position: relative;
+    }
+    .bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 800px 1400px at 50% 30%, #1a2230 0%, #0a0d12 60%);
+    }
+    /* 顶部标签 */
+    .header {
+      position: absolute; top: 70px; left: 100px;
+      font-size: 26px; letter-spacing: 4px; color: #ff8a4c; font-weight: 700;
+    }
+    .header::before {
+      content: ''; display: inline-block;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #ff8a4c; margin-right: 12px;
+      box-shadow: 0 0 16px #ff8a4c; vertical-align: middle;
+    }
+    /* 标题 */
+    .title {
+      position: absolute; top: 130px; left: 100px;
+      font-size: 88px; font-weight: 900; line-height: 1.15; letter-spacing: 4px;
+    }
+    .title .accent {
+      background: linear-gradient(135deg, #ff8a4c, #ffb677);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    /* 副标题 */
+    .sub {
+      position: absolute; top: 350px; left: 100px; right: 100px;
+      font-size: 36px; line-height: 1.6; color: #c5cdd9;
+    }
+    /* 参数对比图 */
+    .compare {
+      position: absolute; top: 520px; left: 100px; right: 100px;
+      display: flex; gap: 30px;
+    }
+    .pane {
+      flex: 1;
+      background: rgba(20, 26, 38, 0.6);
+      border: 1px solid #2c384a;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .pane .label {
+      padding: 16px 24px;
+      font-size: 26px;
+      font-weight: 700;
+      color: #ffb677;
+      background: rgba(255, 138, 76, 0.1);
+      border-bottom: 1px solid #2c384a;
+      display: flex; justify-content: space-between;
+    }
+    .pane .label .val {
+      font-family: ui-monospace, monospace;
+      color: #ff8a4c;
+    }
+    .pane img {
+      width: 100%; height: 420px;
+      object-fit: cover; display: block;
+    }
+    /* 关键说明 */
+    .points {
+      position: absolute; top: 1080px; left: 100px; right: 100px;
+    }
+    .point {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 28px;
+      font-size: 34px;
+      line-height: 1.5;
+      color: #c5cdd9;
+    }
+    .point .num {
+      flex-shrink: 0;
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff8a4c, #ff5b3a);
+      color: #0a0d12;
+      font-size: 32px; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .point b { color: #ffb677; }
+    /* 底部公式带 */
+    .formula {
+      position: absolute; bottom: 200px; left: 100px; right: 100px;
+      background: rgba(20, 26, 38, 0.7);
+      border: 1px solid #2c384a;
+      border-radius: 16px;
+      padding: 36px 40px;
+      font-family: ui-monospace, 'JetBrains Mono', monospace;
+      font-size: 26px;
+      color: #ffb677;
+      line-height: 1.8;
+    }
+    .formula .small { color: #8b95a7; font-size: 22px; }
+    .foot {
+      position: absolute; bottom: 60px; left: 100px;
+      font-size: 24px; color: #5b6678;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="header">FEATURE 01 · 参数调控</div>
+  <div class="title">5 个滑块，<br/><span class="accent">实时重塑图案</span></div>
+  <div class="sub">Gray-Scott 模型只有 5 个参数，但每个都改变涌现图样的形态——从珊瑚到迷宫，从漩涡到指纹。</div>
+
+  <div class="compare">
+    <div class="pane">
+      <div class="label">珊瑚 <span class="val">F=0.055 K=0.062</span></div>
+      <img src="../screenshots/01-default-coral.png" alt="coral" />
+    </div>
+    <div class="pane">
+      <div class="label">迷宫 <span class="val">F=0.029 K=0.057</span></div>
+      <img src="../screenshots/02-maze.png" alt="maze" />
+    </div>
+  </div>
+
+  <div class="points">
+    <div class="point">
+      <div class="num">1</div>
+      <div><b>Feed（F）</b>：u 的补充速率。越大越"肥"。</div>
+    </div>
+    <div class="point">
+      <div class="num">2</div>
+      <div><b>Kill（K）</b>：v 的消亡速率。越大越"瘦"。</div>
+    </div>
+    <div class="point">
+      <div class="num">3</div>
+      <div><b>Du / Dv</b>：扩散系数，控制空间蔓延速度。</div>
+    </div>
+  </div>
+
+  <div class="formula">
+    ∂u/∂t = Du·∇²u − u·v² + F·(1−u)<br/>
+    ∂v/∂t = Dv·∇²v + u·v² − (F+K)·v<br/>
+    <span class="small">// Karl Sims, 1994 · Pearson, 1993</span>
+  </div>
+
+  <div class="foot">QW · 2026.10 · PAGE 02</div>
+</body>
+</html>

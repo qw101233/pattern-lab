@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>斑图工坊 · 03 · 核心功能 2 · 8 种涌现图案</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; }
+    body {
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+      background: #0a0d12;
+      color: #e8edf3;
+      position: relative;
+    }
+    .bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 900px 1300px at 50% 40%, #1a2230 0%, #0a0d12 60%);
+    }
+    .header {
+      position: absolute; top: 70px; left: 100px;
+      font-size: 26px; letter-spacing: 4px; color: #ff8a4c; font-weight: 700;
+    }
+    .header::before {
+      content: ''; display: inline-block;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #ff8a4c; margin-right: 12px;
+      box-shadow: 0 0 16px #ff8a4c; vertical-align: middle;
+    }
+    .title {
+      position: absolute; top: 130px; left: 100px;
+      font-size: 88px; font-weight: 900; line-height: 1.15; letter-spacing: 4px;
+    }
+    .title .accent {
+      background: linear-gradient(135deg, #ff8a4c, #ffb677);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .sub {
+      position: absolute; top: 340px; left: 100px; right: 100px;
+      font-size: 36px; line-height: 1.6; color: #c5cdd9;
+    }
+    /* 大图：漩涡 */
+    .big {
+      position: absolute; top: 530px; left: 100px;
+      width: 880px; height: 580px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      border: 1px solid #2c384a;
+    }
+    .big img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .big .badge {
+      position: absolute; top: 20px; left: 20px;
+      background: rgba(20, 26, 38, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid #ff8a4c;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-size: 26px;
+      font-weight: 700;
+      color: #ffb677;
+    }
+    /* 下面 3 张小图 */
+    .row {
+      position: absolute; top: 1170px; left: 100px; right: 100px;
+      display: flex; gap: 20px;
+    }
+    .mini {
+      flex: 1;
+      height: 360px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid #2c384a;
+      position: relative;
+    }
+    .mini img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .mini .badge {
+      position: absolute; bottom: 16px; left: 16px;
+      background: rgba(20, 26, 38, 0.85);
+      backdrop-filter: blur(10px);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffb677;
+      border: 1px solid #ff8a4c;
+    }
+    /* 底部数据 */
+    .stats {
+      position: absolute; bottom: 200px; left: 100px; right: 100px;
+      display: flex; gap: 20px;
+    }
+    .stat {
+      flex: 1;
+      background: rgba(20, 26, 38, 0.7);
+      border: 1px solid #2c384a;
+      border-radius: 16px;
+      padding: 28px 20px;
+      text-align: center;
+    }
+    .stat .num {
+      font-size: 48px; font-weight: 900; color: #ff8a4c; line-height: 1;
+    }
+    .stat .lbl {
+      font-size: 22px; color: #8b95a7; margin-top: 12px; letter-spacing: 2px;
+    }
+    .foot {
+      position: absolute; bottom: 60px; left: 100px;
+      font-size: 24px; color: #5b6678;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="header">FEATURE 02 · 涌现图案</div>
+  <div class="title">同一组方程，<br/><span class="accent">8 种生命</span></div>
+  <div class="sub">确定性系统在不同参数下的涌现行为。点开任一预置，看方程式"长出"完全不同的形态。</div>
+
+  <div class="big">
+    <img src="../screenshots/03-vortex.png" alt="vortex" />
+    <div class="badge">🌀 漩涡 · F=0.014 K=0.054</div>
+  </div>
+
+  <div class="row">
+    <div class="mini">
+      <img src="../screenshots/04-zebra.png" alt="zebra" />
+      <div class="badge">🦓 斑马</div>
+    </div>
+    <div class="mini">
+      <img src="../screenshots/05-fingerprint.png" alt="fingerprint" />
+      <div class="badge">👆 指纹</div>
+    </div>
+    <div class="mini">
+      <img src="../screenshots/06-mitosis.png" alt="mitosis" />
+      <div class="badge">🧬 分裂</div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="num">8</div><div class="lbl">内置预置</div></div>
+    <div class="stat"><div class="num">∞</div><div class="lbl">参数空间</div></div>
+    <div class="stat"><div class="num">F/K</div><div class="lbl">关键参数</div></div>
+  </div>
+  <div class="foot">QW · 2026.10 · PAGE 03</div>
+</body>
+</html>

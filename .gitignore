@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+*.log
+Thumbs.db
+.idea/
+.vscode/
+__pycache__/
+
+# 验证脚本生成的中间文件保留（screenshots 算成果）
+# 但保留 verify 临时输出
+
+# 不上传本地缓存
+.cache/
+*.tmp
