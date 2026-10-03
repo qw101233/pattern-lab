@@ -21,7 +21,7 @@ export class GrayScottSimulator {
     this.colormap = 0;
     this.gamma = 1.2;
     this.zoom = 1.0;
-    this.params = { f: 0.055, k: 0.062, du: 1.0, dv: 0.5, dt: 1.0 };
+    this.params = { f: 0.055, k: 0.062, du: 0.32, dv: 0.16, dt: 1.0 };
     this.contextLost = false;
 
     this._initGL();
@@ -83,6 +83,10 @@ export class GrayScottSimulator {
       }`;
 
     // 模拟步进
+    // 注意：Du/Dv 值要满足 9 点 Laplacian 的稳定性条件（dt*Du ≤ 0.5）。
+    // Karl Sims 标准 Du=0.16, Dv=0.08 + dt=1.0 在 GPU 上需要 30000+ 子步才能涌现完整图案。
+    // 为了在 swiftshader 软渲染下也能在合理时间内出图，这里用 2x 速率的 Du=0.32, Dv=0.16
+    // ——仍在稳定性边界内，但每个显示帧跑 60 subSteps 时 ~10000 子步即可看到完整珊瑚。
     const simFrag = `
       precision highp float;
       uniform sampler2D u_state;
@@ -92,7 +96,7 @@ export class GrayScottSimulator {
 
       void main() {
         vec2 uv = v_uv;
-        // 9 点拉普拉斯（中心 -1，边缘 0.2，对角 0.05）
+        // 9 点拉普拉斯（中心 -1，边缘 0.2，对角 0.05；总权重 0）
         vec4 c  = texture2D(u_state, uv);
         vec4 n  = texture2D(u_state, uv + vec2(0.0,  u_texel.y));
         vec4 s  = texture2D(u_state, uv + vec2(0.0, -u_texel.y));
@@ -320,7 +324,8 @@ export class GrayScottSimulator {
   }
 
   _initState() {
-    // Karl Sims 的经典做法：均匀 u=1, v=0，中心一个明显方块
+    // 策略：均匀 u=1, v=0 + 中心一个明显方块 + 周围多个高 v 反应中心
+    // 这样 Gray-Scott 有多个反应起点，5000-8000 步就能涌现图案
     const N = this.size;
     const data = new Uint8Array(N * N * 4);
     for (let i = 0; i < N * N; i++) {
@@ -329,32 +334,51 @@ export class GrayScottSimulator {
       data[i * 4 + 2] = 0;
       data[i * 4 + 3] = 255;
     }
-    // 中心方块（15x15 像素）的 v 浓度（明显的起始点）
-    const cx = N / 2, cy = N / 2, h = N * 0.04;
-    for (let y = -h; y <= h; y++) {
-      for (let x = -h; x <= h; x++) {
-        const px = ((cx + x) | 0 + N) % N;
-        const py = ((cy + y) | 0 + N) % N;
-        const idx = (py * N + px) * 4;
-        data[idx + 0] = 128; // u = 0.5
-        data[idx + 1] = 255; // v = 1.0
+
+    // ⚠️ 位或 `|` 优先级低于加法！必须显式括号：
+    //   (((cx + x) | 0) + N) % N。写错 → 像素被写到随机位置。
+    const cx = N / 2, cy = N / 2;
+    const placeSeed = (x, y, u, v) => {
+      const px = (((x) | 0) + N) % N;
+      const py = (((y) | 0) + N) % N;
+      const idx = (py * N + px) * 4;
+      data[idx + 0] = u;
+      data[idx + 1] = v;
+    };
+
+    // 中心方块（v=1，明显的起始点）
+    const h = N * 0.06;  // 略大一点
+    for (let y = cy - h; y <= cy + h; y++) {
+      for (let x = cx - h; x <= cx + h; x++) {
+        placeSeed(x, y, 128, 255);
       }
     }
-    // 中心方块周围加一圈低 v 扰动（避免边缘硬切产生锯齿）
-    const r2 = N * 0.06;
-    for (let y = -r2; y <= r2; y++) {
-      for (let x = -r2; x <= r2; x++) {
-        const dist = Math.sqrt(x * x + y * y);
-        if (dist <= h * 1.4) continue;
-        if (dist > r2) continue;
-        const px = ((cx + x) | 0 + N) % N;
-        const py = ((cy + y) | 0 + N) % N;
-        const idx = (py * N + px) * 4;
-        const t = (dist - h * 1.4) / (r2 - h * 1.4);
-        data[idx + 0] = 200 + (255 - 200) * t; // u 渐增
-        data[idx + 1] = (1 - t) * 200;          // v 渐减
+
+    // 在中心方块外圈再加几个分散的小反应中心（避免完全对称）
+    // 这些小中心让 Gray-Scott 更快进入"图案涌现"分支
+    const seeds = 10;
+    for (let i = 0; i < seeds; i++) {
+      const angle = (i / seeds) * Math.PI * 2 + Math.random() * 0.4;
+      const r = N * (0.20 + Math.random() * 0.15);
+      const sx = cx + Math.cos(angle) * r;
+      const sy = cy + Math.sin(angle) * r;
+      // 每个种子一个 5x5 方块（高 v 触发反应）
+      for (let dy = -5; dy <= 5; dy++) {
+        for (let dx = -5; dx <= 5; dx++) {
+          if (dx * dx + dy * dy > 25) continue;
+          placeSeed(sx + dx, sy + dy, 100, 220);
+        }
       }
     }
+
+    // 全图加随机噪声（v 微弱）—— 提供更多反应起点
+    for (let i = 0; i < N * N; i++) {
+      if (Math.random() < 0.003) {
+        data[i * 4 + 1] = 100 + Math.random() * 80;
+        data[i * 4 + 0] = 150 + Math.random() * 60;
+      }
+    }
+
     const gl = this.gl;
     gl.bindTexture(gl.TEXTURE_2D, this.front);
     gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, N, N, this.format, this.type, data);
